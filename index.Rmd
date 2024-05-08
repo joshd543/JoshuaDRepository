@@ -1,7 +1,12 @@
 ---
 title: "index.Rmd"
-output: html_document
-date: "2024-05-08"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    theme: united
+    highlight: tango
 ---
 
 ## Hello
@@ -128,17 +133,13 @@ NEON_MAGs_metagenomes_chemistry <- NEON_MAGs %>%
 ```
 
 ```{r}
-kable(
 NEON_MAGs1 <- NEON_MAGs%>%
   select(`Sample Name`,`Site ID`, `GTDB-Tk Taxonomy Lineage`)
-)
 ```
 
 ```{r}
-kable(
 NEON_metagenomes1 <- NEON_metagenomes%>%
   select(`Sample Name`,`Site ID`, `Ecosystem Subtype`)
-)
 ```
 
 ## Filter data
@@ -191,7 +192,60 @@ NEON_site <- NEON_full %>%
 # gets no bacteroidota present, so will not use DELETE eventually
 ```
 
+
+### Trees data
+
+```{r}
+NEON_MAGs_metagenomes_chemistry <- NEON_MAGs %>%
+left_join(NEON_metagenomes, by = "Sample Name") %>%
+left_join(NEON_chemistry, by = c("Sample Name" = "genomicsSampleID")) %>%
+rename("label" = "Bin ID")
+```
+
+```{r}
+NEON_MAGs_metagenomes_chemistry_noblank <- NEON_MAGs_metagenomes_chemistry %>%
+rename("AssemblyType" = "Assembly Type") %>%
+rename("BinCompleteness" = "Bin Completeness") %>%
+rename("BinContamination" = "Bin Contamination") %>%
+rename("TotalNumberofBases" = "Total Number of Bases") %>%
+rename("EcosystemSubtype" = "Ecosystem Subtype")
+```
+
+```{r}
+tree_arc <- read.tree("data/NEON/gtdbtk.ar53.decorated.tree")
+tree_bac <- read.tree("data/NEON/gtdbtk.bac120.decorated.tree")
+```
+
+```{r}
+node_vector_bac = c(tree_bac$tip.label,tree_bac$node.label)
+grep("Bacteroidota", node_vector_bac, value = TRUE)
+```
+```{r}
+match(grep("Bacteroidota", node_vector_bac, value = TRUE), node_vector_bac)
+```
+
+```{r}
+tree_bac_preorder <- Preorder(tree_bac)
+tree_Bacteroidota <- Subtree(tree_bac_preorder, 2507)
+```
+
 # Results
+
+## Sankey
+
+
+```{r}
+knitr::include_url("sankey-NEON_MAG_ind_pavian.txt.html")
+```
+
+```{r}
+knitr::include_url("sankey-NEON_MAG_co_pavian_bacteroidota.html")
+```
+
+```{r}
+knitr::include_url("sankey-NEON_MAG_site_pavian.txt.html")
+```
+
 
 ##Konza
 ```{r}
@@ -203,6 +257,28 @@ coord_flip() +
 labs(title = 'Novel Bacteria by Site')
 ```
 
+```{r, fig.width=10}
+NEON_MAGs_bact_ind %>%
+ggplot(aes(x = fct_rev(fct_infreq(Site)), fill = Phylum)) +
+geom_bar() +
+coord_flip() +
+labs(title = 'Total MAGs at Each Site')
+```
+
+```{r}
+NEON_MAGs_bact_ind2 <- NEON_MAGs_bact_ind %>%
+filter(`Site ID`== "KONZ")
+```
+
+
+```{r}
+NEON_MAGs_bact_ind2 %>%
+ggplot(aes(x = Phylum, fill = Subplot)) +
+geom_bar(position = position_dodge2(width = 0.9, preserve = "single")) +
+labs(title = 'MAG Count for each Phylum at the KONZA Site')+
+coord_flip()
+
+```
 
 ## Question 1
 
@@ -348,3 +424,28 @@ ggplot(data=NEON_full ,aes(x = Phylum, y = fct_infreq(`Ecosystem Subtype`))) +
 geom_point(aes(color= Phylum))
 )
 ```
+
+
+### CN vs Family
+```{r}
+NEON_full %>%
+ggplot(aes(x = CNratio, y = Family)) +
+labs(title = "New Graph - Josh") +
+geom_point(aes(color='Family')) +
+coord_flip()
+```
+
+```{r}
+ggtree(tree_Bacteroidota, layout="circular", branch.length="none") %<+%
+NEON_MAGs_metagenomes_chemistry +
+geom_point2(mapping=aes(color=`Ecosystem Subtype`, size=`Total Number of Bases`)) +
+new_scale_fill() +
+geom_fruit(
+data=NEON_MAGs_metagenomes_chemistry_noblank,
+geom=geom_tile,
+mapping=aes(y=label, x=1, fill= AssemblyType),
+offset=0.08, # The distance between external layers, default is 0.03 times of x range of tree.
+pwidth=0.25 # width of the external layer, default is 0.2 times of x range of tree.
+)
+```
+
