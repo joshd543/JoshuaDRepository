@@ -6,7 +6,345 @@ date: "2024-05-08"
 
 ## Hello
 
-```{r}
-knitr::include_url("sankey-NEON_MAG_co_pavian_bacteroidota.html")
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Abstract
+
+# 1-2 paragraph motivating reasons
+
+# 2-3 paragraph introduction
+
+# Methods
+
+## libraries
+
+```{r}
+library(tidyverse)
+library(knitr)
+library(plotly)
+library(ggtree)
+library(TDbook) #A Companion Package for the Book "Data Integration, Manipulation and Visualization of Phylogenetic Trees" by Guangchuang Yu (2022, ISBN:9781032233574).
+library(ggimage)
+library(rphylopic)
+library(treeio)
+library(tidytree)
+library(ape)
+library(TreeTools)
+library(phytools)
+library(ggnewscale)
+library(ggtreeExtra)
+library(ggstar)
+```
+
+## NEON tables
+
+### Mag table
+
+```{r}
+NEON_MAGs <- read_csv("data/NEON/GOLD_Study_ID_Gs0161344_NEON_2024_4_21.csv") %>%
+  # remove columns that are not needed for data analysis
+  select(-c(`GOLD Study ID`, `Bin Methods`, `Created By`, `Date Added`, `Bin Lineage`)) %>%
+  # create a new column with the Assembly Type
+  mutate("Assembly Type" = case_when(`Genome Name` == "NEON combined assembly" ~ `Genome Name`,
+                        	TRUE ~ "Individual")) %>%
+  mutate_at("Assembly Type", str_replace, "NEON combined assembly", "Combined") %>%
+  mutate_at("GTDB-Tk Taxonomy Lineage", str_replace, "d__", "") %>%  
+  mutate_at("GTDB-Tk Taxonomy Lineage", str_replace, "p__", "") %>%
+  mutate_at("GTDB-Tk Taxonomy Lineage", str_replace, "c__", "") %>%
+  mutate_at("GTDB-Tk Taxonomy Lineage", str_replace, "o__", "") %>%
+  mutate_at("GTDB-Tk Taxonomy Lineage", str_replace, "f__", "") %>%
+  mutate_at("GTDB-Tk Taxonomy Lineage", str_replace, "g__", "") %>%
+  mutate_at("GTDB-Tk Taxonomy Lineage", str_replace, "s__", "") %>%
+  separate(`GTDB-Tk Taxonomy Lineage`, c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), ";", remove = FALSE) %>%
+  mutate_at("Domain", na_if,"") %>%
+  mutate_at("Phylum", na_if,"") %>%
+  mutate_at("Class", na_if,"") %>%
+  mutate_at("Order", na_if,"") %>%
+  mutate_at("Family", na_if,"") %>%
+  mutate_at("Genus", na_if,"") %>%
+  mutate_at("Species", na_if,"") %>%
+ 
+  # Get rid of the the common string "Soil microbial communities from "
+  mutate_at("Genome Name", str_replace, "Terrestrial soil microbial communities from ", "") %>%
+  # Use the first `-` to split the column in two
+  separate(`Genome Name`, c("Site","Sample Name"), " - ") %>%
+  # Get rid of the the common string "S-comp-1"
+  mutate_at("Sample Name", str_replace, "-comp-1", "") %>%
+  # separate the Sample Name into Site ID and plot info
+  separate(`Sample Name`, c("Site ID","subplot.layer.date"), "_", remove = FALSE,) %>%
+  # separate the plot info into 3 columns
+  separate(`subplot.layer.date`, c("Subplot", "Layer", "Date"), "-")
+```
+### Lab 9 Infrastructure
+
+```{r}
+NEON_MAGs_bact_ind <- NEON_MAGs %>% 
+  filter(Domain == "Bacteria") %>% 
+  filter(`Assembly Type` == "Individual") 
+```
+
+
+### Metagenome table
+
+```{r}
+NEON_metagenomes <- read_tsv("data/NEON/exported_img_data_Gs0161344_NEON.tsv") %>%
+  select(-c(`Domain`, `Sequencing Status`, `Sequencing Center`)) %>%
+  rename(`Genome Name` = `Genome Name / Sample Name`) %>%
+  filter(str_detect(`Genome Name`, 're-annotation', negate = T)) %>%
+  filter(str_detect(`Genome Name`, 'WREF plot', negate = T))
+```
+
+```{r}
+NEON_metagenomes <- NEON_metagenomes %>%
+  # Get rid of the the common string "Soil microbial communities from "
+  mutate_at("Genome Name", str_replace, "Terrestrial soil microbial communities from ", "") %>%
+  # Use the first `-` to split the column in two
+  separate(`Genome Name`, c("Site","Sample Name"), " - ") %>%
+  # Get rid of the the common string "-comp-1"
+  mutate_at("Sample Name", str_replace, "-comp-1", "") %>%
+  # separate the Sample Name into Site ID and plot info
+  separate(`Sample Name`, c("Site ID","subplot.layer.date"), "_", remove = FALSE,) %>%
+  # separate the plot info into 3 columns
+  separate(`subplot.layer.date`, c("Subplot", "Layer", "Date"), "-")
+```
+
+### NEON chemistry data
+
+```{r}
+NEON_chemistry <- read_tsv("data/NEON/neon_plot_soilChem1_metadata.tsv") %>%
+  # remove -COMP from genomicsSampleID
+  mutate_at("genomicsSampleID", str_replace, "-COMP", "")
+```
+
+### Join data
+
+```{r}
+NEON_MAGs_metagenomes_chemistry <- NEON_MAGs %>%
+  left_join(NEON_metagenomes, by = "Sample Name") %>%
+  left_join(NEON_chemistry, by = c("Sample Name" = "genomicsSampleID")) %>%
+  rename("label" = "Bin ID")
+```
+
+```{r}
+kable(
+NEON_MAGs1 <- NEON_MAGs%>%
+  select(`Sample Name`,`Site ID`, `GTDB-Tk Taxonomy Lineage`)
+)
+```
+
+```{r}
+kable(
+NEON_metagenomes1 <- NEON_metagenomes%>%
+  select(`Sample Name`,`Site ID`, `Ecosystem Subtype`)
+)
+```
+
+## Filter data
+
+### site data
+
+```{r}
+Site_MAGs <- NEON_MAGs %>%
+  filter(`Site ID` == "KONZ")
+```
+
+```{r}
+Site_metagenomes <- NEON_metagenomes %>%
+  filter(`Site ID` == "KONZ")
+```
+
+```{r}
+Site_chemistry <- NEON_chemistry %>%
+  filter(`siteID` == "KONZ")
+```
+
+### full joining data
+
+```{r}
+NEON1 <- NEON_MAGs %>%
+  full_join(NEON_metagenomes, by = "Sample Name")
+NEON_full <- NEON1 %>%
+  full_join(NEON_chemistry, by = c("Sample Name" = "genomicsSampleID"))
+```
+
+```{r}
+NEON2 <- Site_MAGs %>%
+  full_join(Site_metagenomes, by = "Sample Name")
+Site_full <- NEON2 %>%
+  full_join(Site_chemistry, by = c("Sample Name" = "genomicsSampleID"))
+```
+
+### filter for bacteroidota
+
+```{r}
+NEON_Bact <- NEON_full %>%
+  filter(Phylum =='Bacteroidota')
+
+```
+
+```{r}
+NEON_site <- NEON_full %>%
+  filter(`siteID` == "KONZ")
+
+# gets no bacteroidota present, so will not use DELETE eventually
+```
+
+# Results
+
+##Konza
+```{r}
+NEON_MAGs_bact_ind %>%
+filter(is.na(Class) | is.na(Order) | is.na(Domain) | is.na(Phylum) | is.na(Family) | is.na(Genus)) %>%
+ggplot(aes(x = fct_infreq(`Site`))) +
+geom_bar() +
+coord_flip() +
+labs(title = 'Novel Bacteria by Site')
+```
+
+
+## Question 1
+
+Chemical distribution of the site. Konza
+
+## Question 2
+
+## How does chemistry effect the distribution of the bacteria at Konza
+
+### Nitrogen % vs. Organic C %
+
+#### Bacteroidota only
+
+```{r}
+
+ggplotly(
+ggplot(data= NEON_Bact ,aes(x = organicCPercent, y = nitrogenPercent)) +
+geom_point(aes(color= Family))
+)
+```
+
+#### all phylums
+
+```{r}
+ggplotly(
+ggplot(data= NEON_full ,aes(x = organicCPercent, y = nitrogenPercent)) +
+geom_point(aes(color= Phylum))
+)
+```
+
+
+### soil in water ph vs. soil in cacl ph
+
+#### only bacteroidota:
+
+```{r}
+ggplotly(
+ggplot(data= NEON_Bact ,aes(x = soilInWaterpH , y = soilInCaClpH)) +
+geom_point(aes(color= Family))
+)
+```
+#### all phylums:
+
+```{r}
+ggplotly(
+ggplot(data= NEON_full ,aes(x = soilInWaterpH , y = soilInCaClpH)) +
+geom_point(aes(color= Phylum))
+)
+```
+
+#### at Konza:
+
+```{r}
+ggplotly(
+ggplot(data= Site_full ,aes(x = soilInWaterpH , y = soilInCaClpH)) +
+geom_point(aes(color= Phylum))
+)
+```
+
+#### CN ratio vs. family
+
+
+## Question 3
+
+### How does temperature effect distribution
+
+#### only bacteroidota:
+
+```{r}
+ggplotly(
+ggplot(data= NEON_Bact ,aes(x = fct_infreq(`Site ID.x`), y = soilTemp)) +
+geom_point(aes(color= Family))+
+geom_boxplot() +
+theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
+)
+```
+
+#### all phylums:
+
+```{r}
+ggplotly(
+ggplot(data= NEON_full ,aes(x = fct_infreq(`Site ID.x`), y = soilTemp)) +
+geom_point(aes(color= Phylum))+
+geom_boxplot() +
+theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
+)
+```
+
+### Soil temperature vs. ecosystem
+
+#### Only Bacteroidota:
+
+```{r}
+ggplotly(
+ggplot(data=NEON_Bact ,aes(x = soilTemp, y = fct_infreq(`Ecosystem Subtype`))) +
+geom_point(aes(color= Family))
+)
+```
+
+#### all phylums:
+
+```{r}
+ggplotly(
+ggplot(data=NEON_full ,aes(x = soilTemp, y = fct_infreq(`Ecosystem Subtype`))) +
+geom_point(aes(color= Phylum))
+)
+```
+
+#### at Konza:
+
+```{r}
+ggplotly(
+ggplot(data = Site_full ,aes(x = soilTemp, y = fct_infreq(`Ecosystem Subtype`))) +
+geom_point(aes(color= Phylum))
+)
+```
+
+## Question 4
+
+### What kinds of bacteria thrive in our location
+
+#### only bacteroidota:
+
+
+## Question 5
+
+### What kinds of biomes does are bacteria live in
+
+#### Only Bacteroidota:
+
+```{r}
+ggplotly(
+ggplot(data=NEON_Bact ,aes(x = Family, y = fct_infreq(`Ecosystem Subtype`))) +
+geom_point(aes(color= Family))
+)
+```
+
+#### All phylums:
+
+```{r}
+ggplotly(
+ggplot(data=NEON_full ,aes(x = Phylum, y = fct_infreq(`Ecosystem Subtype`))) +
+geom_point(aes(color= Phylum))
+)
+```
