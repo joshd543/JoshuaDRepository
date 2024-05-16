@@ -1,5 +1,6 @@
 ---
-title: "index.Rmd"
+title: "EvoGeno Final Project"
+Author: "Sophia Halling, Josh Davis, Emma Michienzie"
 output:
   html_document:
     toc: true
@@ -7,6 +8,10 @@ output:
     toc_depth: 4
     theme: united
     highlight: tango
+editor_options: 
+  markdown: 
+    wrap: sentence
+bibliography: Ref.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -14,14 +19,44 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Abstract
+In this research project we looked at the genomics of the phylum Bacteriodota and the phylums located at the Konza Prairie Biological Station. They were looked at separately and in relation to one another. We aimed to generate an analysis of Bacteriodota and the Konza Site, using a multitude of evolutionary genomics and bioinformatic techniques. Our research used data exclusively from the National Ecological Observatory Network (NEON) and the Integrated Microbial Genome database (IMG) in order to complete our investigation.
 
-# 1-2 paragraph motivating reasons
+# Motivating Reasons
 
-# 2-3 paragraph introduction
+In this paper, we have explored many facets of technology-based genomics.
+We were assigned a specific US location and phylum.
+We have conducted an in-depth investigation in order to find out more about the phylum.
+Throughout this class, we have used a plethora of investigative techniques to provide information on our phylum.
+The group members will use our learned knowledge in Evolutionary Genomics & Bioinformatics to create a comprehensive analysis of the phylum, Bacteroidota.
+
+# Introduction
+
+Throughout this class we have worked on researching a specific site and phylum.
+The specific NEON site we were assigned is the Konza Prairie Biological Station in Kansas, US site (NEON.) This site contains information about the type of location, elevation, NCLD class, plot size, slope aspect, slope gradient, potential sampling modules, domain, and the specific coordinates of the site (NEON.) The site also shows the distribution of various animals, and resources across the site (NEON).
+The phylum assigned to our group was Bacteroidota.
+Bacteroidota is a phylum that consists of gram-negative bacteria often found in soil, the ocean, in animal digestive systems, and other similar microbiomes (Wiki.) This phylum consists of 6 classes (Oliphant.) Bacteroidota are well known for their symbiotic relationship within the gastrointestinal tract of animals.
+We will use the information from the Metagenome assembly with all of the site and phylum information to analyze patterns and features of Bacteroidota. 
+[@oliphant_bacteroidota_nodate][@mason_taxonomic_2023][@shibata_isolation_2023][@schoch_ncbi_2020][@noauthor_konza_nodate][@noauthor_bacteroidota_2024][@DOE_Joint_Genome_Institute][@Field_Sites_NSF_NEON]
 
 # Methods
 
-## libraries
+The main data used for this resort came from NEON and IMG.
+NEON collected their data by using different data collection techniques.[@DOE_Joint_Genome_Institute][@Field_Sites_NSF_NEON]
+These techniques include using airborne remote sensing, automated instruments, and observational sampling.
+Airborne remote sensing is done by using NEONs Airborne Observation Platform where a light aircraft is used in order to gather high resolution remote sensing data from a low altitude.
+The automated instruments that NEON uses are controlled and operated by the Instrumented System.
+The Instrumented System is divided into two systems the Aquatic Instrumented System and the Terrestrial Instrumented System.
+These systems collected data from meteorological, soil, phenological, surface water, and groundwater.
+Observational sampling by NEON consists of the use of the Observational System.
+This system has NEON field scientists to collect observations and samples from different sites, both aquatic and terrestrial, during different times of year.
+These NEON field scientists are split up into the Aquatic Observational System and the Terrestrial Observational System similar to how the Instrumented System is set up.
+Once all of NEON’s samples were collected they analyzed and organized the data in order to upload it to IMG where our group was able to take that data and manipulate it.[@Field_Sites_NSF_NEON]
+We manipulated the data in order to show data from our specific phylum, Bacteriodota, and fromout specific site, Konza Prairie Biological Station in Kansas, US. Many different resources were used in order to manipulate and organize the data to our benefit.
+These resources include the NEON website, the IMG website, Sankey Plot, Postit Cloud, Rmarkdown, Zotero, Pavian, and many different filtering methods on Postit Cloud and Rmarkdown.
+All of these resources were used to write code that represented the specific data needed.
+This code includes…..
+
+## Libraries
 
 ```{r}
 library(tidyverse)
@@ -80,6 +115,7 @@ NEON_MAGs <- read_csv("data/NEON/GOLD_Study_ID_Gs0161344_NEON_2024_4_21.csv") %>
   # separate the plot info into 3 columns
   separate(`subplot.layer.date`, c("Subplot", "Layer", "Date"), "-")
 ```
+
 ### Lab 9 Infrastructure
 
 ```{r}
@@ -87,13 +123,6 @@ NEON_MAGs_bact_ind <- NEON_MAGs %>%
   filter(Domain == "Bacteria") %>% 
   filter(`Assembly Type` == "Individual") 
 ```
-
-```{r}
-NEON_MAGs_bact_co <- NEON_MAGs %>% 
-  filter(Domain == "Bacteria") %>% 
-  filter(`Assembly Type` == "Combined") 
-```
-
 
 ### Metagenome table
 
@@ -148,7 +177,7 @@ NEON_metagenomes1 <- NEON_metagenomes%>%
 
 ## Filter data
 
-### site data
+### Site data
 
 ```{r}
 Site_MAGs <- NEON_MAGs %>%
@@ -165,7 +194,7 @@ Site_chemistry <- NEON_chemistry %>%
   filter(`siteID` == "KONZ")
 ```
 
-### full joining data
+### Full joining data
 
 ```{r}
 NEON1 <- NEON_MAGs %>%
@@ -181,7 +210,7 @@ Site_full <- NEON2 %>%
   full_join(Site_chemistry, by = c("Sample Name" = "genomicsSampleID"))
 ```
 
-### filter for bacteroidota
+### Filter for Bacteroidota
 
 ```{r}
 NEON_Bact <- NEON_full %>%
@@ -190,12 +219,9 @@ NEON_Bact <- NEON_full %>%
 ```
 
 ```{r}
-NEON_site <- NEON_full %>%
-  filter(`siteID` == "KONZ")
-
-# gets no bacteroidota present, so will not use DELETE eventually
+NEON_MAGs_bact_ind2 <- NEON_MAGs_bact_ind %>%
+filter(`Site ID`== "KONZ")
 ```
-
 
 ### Trees data
 
@@ -224,6 +250,7 @@ tree_bac <- read.tree("data/NEON/gtdbtk.bac120.decorated.tree")
 node_vector_bac = c(tree_bac$tip.label,tree_bac$node.label)
 grep("Bacteroidota", node_vector_bac, value = TRUE)
 ```
+
 ```{r}
 match(grep("Bacteroidota", node_vector_bac, value = TRUE), node_vector_bac)
 ```
@@ -237,216 +264,25 @@ tree_Bacteroidota <- Subtree(tree_bac_preorder, 2507)
 
 ## Sankey
 
-
 ```{r}
-knitr::include_url("sankey-NEON_MAG_ind_pavian.txt (1).html")
+knitr::include_url("sankey-NEON_MAG_ind_pavian.txt(1).html")
 ```
+
+Figure 1 shows
 
 ```{r}
 knitr::include_url("sankey-NEON_MAG_co_pavian_bacteroidota.html")
 ```
 
-```{r}
-knitr::include_url("sankey-NEON_MAG_site_pavian.txt (1).html")
-```
-
-
-##Konza
-```{r}
-NEON_MAGs_bact_ind %>%
-filter(is.na(Class) | is.na(Order) | is.na(Domain) | is.na(Phylum) | is.na(Family) | is.na(Genus)) %>%
-ggplot(aes(x = fct_infreq(`Site`))) +
-geom_bar() +
-coord_flip() +
-labs(title = 'Novel Bacteria by Site')
-```
+Figure 2 shows
 
 ```{r}
-NEON_MAGs_bact_co %>%
-filter(is.na(Class) | is.na(Order) | is.na(Domain) | is.na(Phylum) | is.na(Family) | is.na(Genus)) %>%
-ggplot(aes(x = fct_infreq(`Site`))) +
-geom_bar() +
-coord_flip() +
-labs(title = 'Novel Bacteria by Site')
+knitr::include_url("sankey-NEON_MAG_site_pavian.txt(1).html")
 ```
 
-```{r, fig.width=10}
-NEON_MAGs_bact_ind %>%
-ggplot(aes(x = fct_rev(fct_infreq(Site)), fill = Phylum)) +
-geom_bar() +
-coord_flip() +
-labs(title = 'Total MAGs at Each Site')
-```
+Figure 3 shows
 
-```{r}
-NEON_MAGs_bact_ind2 <- NEON_MAGs_bact_ind %>%
-filter(`Site ID`== "KONZ")
-```
-
-
-```{r}
-NEON_MAGs_bact_ind2 %>%
-ggplot(aes(x = Phylum, fill = Subplot)) +
-geom_bar(position = position_dodge2(width = 0.9, preserve = "single")) +
-labs(title = 'MAG Count for each Phylum at the KONZA Site')+
-coord_flip()
-
-```
-
-## Question 1
-
-Chemical distribution of the site. Konza
-
-## Question 2
-
-## How does chemistry effect the distribution of the bacteria at Konza
-
-### Nitrogen % vs. Organic C %
-
-#### Bacteroidota only
-
-```{r}
-
-ggplotly(
-ggplot(data= NEON_Bact ,aes(x = organicCPercent, y = nitrogenPercent)) +
-geom_point(aes(color= Family))
-)
-```
-
-#### all phylums
-
-```{r}
-ggplotly(
-ggplot(data= NEON_full ,aes(x = organicCPercent, y = nitrogenPercent)) +
-geom_point(aes(color= Phylum))
-)
-```
-
-
-### soil in water ph vs. soil in cacl ph
-
-#### only bacteroidota:
-
-```{r}
-ggplotly(
-ggplot(data= NEON_Bact ,aes(x = soilInWaterpH , y = soilInCaClpH)) +
-geom_point(aes(color= Family))
-)
-```
-#### all phylums:
-
-```{r}
-ggplotly(
-ggplot(data= NEON_full ,aes(x = soilInWaterpH , y = soilInCaClpH)) +
-geom_point(aes(color= Phylum))
-)
-```
-
-#### at Konza:
-
-```{r}
-ggplotly(
-ggplot(data= Site_full ,aes(x = soilInWaterpH , y = soilInCaClpH)) +
-geom_point(aes(color= Phylum))
-)
-```
-
-#### CN ratio vs. family
-
-
-## Question 3
-
-### How does temperature effect distribution
-
-#### only bacteroidota:
-
-```{r}
-ggplotly(
-ggplot(data= NEON_Bact ,aes(x = fct_infreq(`Site ID.x`), y = soilTemp)) +
-geom_point(aes(color= Family))+
-geom_boxplot() +
-theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
-)
-```
-
-#### all phylums:
-
-```{r}
-ggplotly(
-ggplot(data= NEON_full ,aes(x = fct_infreq(`Site ID.x`), y = soilTemp)) +
-geom_point(aes(color= Phylum))+
-geom_boxplot() +
-theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))
-)
-```
-
-### Soil temperature vs. ecosystem
-
-#### Only Bacteroidota:
-
-```{r}
-ggplotly(
-ggplot(data=NEON_Bact ,aes(x = soilTemp, y = fct_infreq(`Ecosystem Subtype`))) +
-geom_point(aes(color= Family))
-)
-```
-
-#### all phylums:
-
-```{r}
-ggplotly(
-ggplot(data=NEON_full ,aes(x = soilTemp, y = fct_infreq(`Ecosystem Subtype`))) +
-geom_point(aes(color= Phylum))
-)
-```
-
-#### at Konza:
-
-```{r}
-ggplotly(
-ggplot(data = Site_full ,aes(x = soilTemp, y = fct_infreq(`Ecosystem Subtype`))) +
-geom_point(aes(color= Phylum))
-)
-```
-
-## Question 4
-
-### What kinds of bacteria thrive in our location
-
-#### only bacteroidota:
-
-
-## Question 5
-
-### What kinds of biomes does are bacteria live in
-
-#### Only Bacteroidota:
-
-```{r}
-ggplotly(
-ggplot(data=NEON_Bact ,aes(x = Family, y = fct_infreq(`Ecosystem Subtype`))) +
-geom_point(aes(color= Family))
-)
-```
-
-#### All phylums:
-
-```{r}
-ggplotly(
-ggplot(data=NEON_full ,aes(x = Phylum, y = fct_infreq(`Ecosystem Subtype`))) +
-geom_point(aes(color= Phylum))
-)
-```
-
-
-### CN vs Family
-```{r}
-NEON_full %>%
-ggplot(aes(x = CNratio, y = Family)) +
-labs(title = "New Graph - Josh") +
-geom_point(aes(color='Family')) +
-coord_flip()
-```
+## Tree
 
 ```{r}
 ggtree(tree_Bacteroidota, layout="circular", branch.length="none") %<+%
@@ -461,5 +297,260 @@ offset=0.08, # The distance between external layers, default is 0.03 times of x 
 pwidth=0.25 # width of the external layer, default is 0.2 times of x range of tree.
 )
 ```
+
+Figure 4 is a phylogenetic tree including information from Bacteriodota only. This tree shows the lineages of Bacteriododta from their earliest point in evolution. Each lineage ranges from having 2e+06 to 3E+06 total base pairs in their geonomes. This tree also shows where each lineage is found and weather or not they have an idivisual assembly or a combined assembly.
+
+
+## Bacteroidota
+
+### Nitrogen % vs. Organic C %
+
+```{r}
+
+ggplotly(
+ggplot(data= NEON_Bact ,aes(x = organicCPercent, y = nitrogenPercent)) +
+geom_point(aes(color= Family))+
+  labs(title = "Nitrogen % vs. Organic C %")
+)
+```
+
+Figure 5 has three different families of bacteroidota displayed, Chitinophagaceae, Ignavibacteriaceae, and vadinHA17. Chitinophagaceae shows up at four different ratios of nitrogen and carbon, unlike the others , which only show up once on the graph. Chitinophagaceae required less nitrogen than the other families on the graph. Ignavibacteriaceae showed up in high carbon and medium nitrogen percentages, while vadinHA17 appeared on the graph at both high nitrogen and carbon percentages. Figure 4 also had much less nitrogen percentage than carbon percentage in general as nitrogen went from 1-2 %, while carbon was from 10-40%. The other families besides Cytophagaceae, OLB5 and Sphingobacteriaceae are found at the same level as Ignavibacteriaceae.
+
+
+### Soil in water pH vs. Soil in CaCl pH
+
+```{r}
+ggplotly(
+ggplot(data= NEON_Bact ,aes(x = soilInWaterpH , y = soilInCaClpH)) +
+geom_point(aes(color= Family))+
+  labs(title = "Soil in water pH vs. Soil in CaCl pH")
+)
+```
+
+Figure 6 seems to show a linear relationship between water pH and CaCl pH with no obvious clump of families at one specific pH. Most of the families appear to live in more acidic soil regardless of whether it is in CaCl or water with UBA10428 being close to neutral pH. The family Chitinophagaceae doesn’t appear to share pH values with other families. This family also has many values that are very acidic and only a few that are closer to neutral. On the other hand vadinHA17 shares many of its pH values with other families and has 3 different values that are more acidic for soil in CaCl than in water. Most of the families in figure 6 were either very acidic ranging from around 6-3 pH.
+
+
+### How does temperature effect distribution?
+
+```{r}
+ggplotly(
+ggplot(data= NEON_Bact ,aes(x = fct_infreq(`Site ID.x`), y = soilTemp)) +
+geom_point(aes(color= Family))+
+geom_boxplot() +
+theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))+
+   labs(title = "Relationship between Soil Temp and Site ID")
+)
+```
+
+Figure 7 shows the soil temperature at the sites that Bacteroidota exists at. Chitinophagaceae is able to live in the widest range of temperatures so it exists at most of the sites that bacteroidota is found at. It also lives at TEAK, which has the highest soil temperatures. The other families don’t show up at as many sites or at as many temperatures. For example, OLB5 only shows up at TOOL at one specific temperature.
+
+
+### Soil temperature vs. Ecosystem
+
+```{r}
+ggplotly(
+ggplot(data=NEON_Bact ,aes(x = soilTemp, y = fct_infreq(`Ecosystem Subtype`))) +
+geom_point(aes(color= Family))+
+  labs(title = "Soil temperature vs. Ecosystem")
+)
+```
+
+Figure 8 shows the ecosystem types vs. the soil temperature that different families of Bacteroidota exist in. Bacteroidota only shows up at four types of ecosystems, Taiga, wetlands, Tundra, and Temperate forest. Chitinophagaceae shows up at all four of those ecosystems at varying temperatures. vadinHA17 only shows up in wetlands and Tundra, which have a difference in temperature of 6 degrees, while the rest of the families only show up in one ecosystem at one temperature. 
+
+
+### What kinds of biomes do are bacteria live in?
+
+```{r}
+ggplotly(
+ggplot(data=NEON_Bact ,aes(x = Family, y = fct_infreq(`Ecosystem Subtype`))) +
+geom_point(aes(color= Family))+
+  labs(title = "Bacteriodota famlies Ecosystem location")
+)
+```
+
+Figure 9 shows the ecosystem types that different families of Bacteroidota exist in. Bacteroidota only shows up at 5 types of ecosystems, Taiga, wetlands, Tundra, temperate forest and shrubland. Chitinophagaceae shows up at all of those ecosystems.the rest show up in two different ecosystems, except for UBA10428, which only shows up in wetlands. The biome with the most biodiversity is shrubland with five of the families present, while wetlands is second with four families.
+
+
+### CN vs Family
+
+```{r}
+ggplotly(
+ggplot(data=NEON_Bact ,aes(x = CNratio, y = Family)) +
+geom_point(aes(color=Family))+
+coord_flip()+
+labs(title = "CN ratio vs. family")
+)
+```
+
+Figure 10 shows the carbon nitrogen ratio in realtion to the different familes of Bacteriododta. Only one point is shown on this graph showing that Igavibacteriaceae is the only family in the Bacteriododta phylum that the carbon nitrogen ration has and effect on.
+
+## All Phylums
+
+### Nitrogen % vs. Organic C %
+
+```{r}
+ggplotly(
+ggplot(data= NEON_full ,aes(x = organicCPercent, y = nitrogenPercent)) +
+geom_point(aes(color= Phylum))+
+  labs(title = "Nitrogen % vs. Organic C %")
+)
+```
+
+Figure 11 has many different phylums. Most of the phylums seem to be concentrated at the area with less carbon and less nitrogen. Pseudomonadota has the largest range of different ratios as it exists at both a high nitrogen and carbon percentage and a low nitrogen and carbon percentage. There are many overlapping phylums that exist at the same ratio as others on this graph such as Verrucomicrobiota, which exists at 36.86% carbon and 1.36% Nitrogen along with others. Bacteroidota has a large range of ratios it can exist in, from low nitrogen to medium nitrogen, greater than 1 and less than 2, and in carbon percentages up to 40%.
+
+### Soil in water pH vs. soil in CaCl pH
+
+```{r}
+ggplotly(
+ggplot(data= NEON_full ,aes(x = soilInWaterpH , y = soilInCaClpH)) +
+geom_point(aes(color= Phylum))+
+  labs(title = "Soil in water pH vs. soil in CaCl pH")
+)
+```
+
+Figure 12 shows the different phylums of bacteria at different levels of pH in water and CaCl. This graph shows a linear relationship between pH in CaCl and pH in water. The phylums were much more widely distributed than just the phylum of bacteroidota alone as there was no one pH with significantly less or more datapoints. The pH also reached 8 on the upper end, but was still around 3 at the lower end. Soil in CaCl was more acidic than soil in water.
+
+### CN vs Phylum
+
+```{r}
+ggplotly(
+ggplot(data=NEON_full ,aes(x = CNratio, y = Phylum)) +
+geom_point(aes(color=Phylum))+
+coord_flip()+
+labs(title = "CN ratio vs. Phylum")
+)
+```
+
+Figure 13 shows the carbon nitrogen ratio and how it effects each phylum. Most phylums do better when the carbon nitrogen ratio is higher. However phylums like Acidobacteiodota,Actinomycetota,Pseudomonadota, and Verrucomicrobiota do well in a wide range of carbon to nitrogen ratios ranging from a carbon ration of 22.73 to 36.13. 
+
+### How does temperature effect distribution?
+
+```{r}
+ggplotly(
+ggplot(data= NEON_full ,aes(x = fct_infreq(`Site ID.x`), y = soilTemp)) +
+geom_point(aes(color= Phylum))+
+geom_boxplot() +
+theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1))+
+  labs(title = "Temperature in realtion to phylum distrabution")
+)
+```
+
+Figure 14 is a boxplot that shows the soil temperature range at each site. Each phylum is placed on the graph showing the soil temp at hwich it survives best at each site. 
+
+### Soil temperature vs. Ecosystem
+
+```{r}
+ggplotly(
+ggplot(data=NEON_full ,aes(x = soilTemp, y = fct_infreq(`Ecosystem Subtype`))) +
+geom_point(aes(color= Phylum))+
+  labs(title = "Soil temperature vs. Ecosystem")
+)
+```
+
+Figure 15 is showing the soil temp in each ecosystem where the phylums are best suited. Bacteriodota are not present in grasslands, however they are in the tundra which has lower temperatures that grasslands. This implies that Bacteriodota like colder temperatures rather than warmer ones.
+
+### What kinds of biomes does are bacteria live in?
+
+```{r}
+ggplotly(
+ggplot(data=NEON_full ,aes(x = Phylum, y = fct_infreq(`Ecosystem Subtype`))) +
+geom_point(aes(color= Phylum))+
+  labs(title = "Phylum Locations")
+)
+```
+
+Figure 16 shows the loaction of the phylums in their specfic ecosystems. Most phylums are present in almost every ecosystem. Actinomycetota is present at every location while Bacteriododta is only present in a few.
+
+## Konza:
+
+### Soil in Water pH Vs. Soil in CaCl pH
+
+```{r}
+ggplotly(
+ggplot(data= Site_full ,aes(x = soilInWaterpH , y = soilInCaClpH)) +
+geom_point(aes(color= Phylum))+
+  labs(title = "Soil in Water pH Vs. Soil in CaCl pH")
+)
+```
+
+Figure 17 shows a linear relationship between the pH of soil in CaCl and the pH of soil in water. The phylums Actinomycetota, Themoproteota, Pseudomonadota, Methylomirabilota and Acidobacteriota have a wide range of pH from ~6-7. The pH of soil in CaCl is less than the pH of soil in water by around 1. The pH of around 7.4 in water and 6.78 in CaCl has the greatest biodiversity. The Phylum Myxcoccota only shows up around 6.88 pH in water and  6.2 pH in CaCl. There are many less phylums in this graph than in the overall phylums. This figure also doesn’t reach the extremes with the maximum less than 8 pH and the minimum for than 6 pH.
+
+### Soil temperature vs. Ecosystem
+
+```{r}
+ggplotly(
+ggplot(data = Site_full ,aes(x = soilTemp, y = fct_infreq(`Ecosystem Subtype`))) +
+geom_point(aes(color= Phylum))+
+  labs(title = "Soil temperature vs. Ecosystem")
+)
+```
+
+Figure 18 shows that Konza only has one ecosystem, Grasslands. The phylums Pseudomonadota, Methylomirabilota, Acidobacteriota and Actinomycetota live at a wide range of soil temperatures from 20-24 degrees. The temperature of approximately 24 degrees has the most biodiversity with 8 of the 10 phylums from Konza able to live at that temperature. Thermoproteota is a phylum that only lives in soil temperatures of 20-21 degrees. Myxococcota only exists at one soil temperature of approximately 21 degrees.
+
+### Novel Bacteria at each Site
+
+```{r}
+NEON_MAGs_bact_ind %>%
+filter(is.na(Class) | is.na(Order) | is.na(Domain) | is.na(Phylum) | is.na(Family) | is.na(Genus)) %>%
+ggplot(aes(x = fct_infreq(`Site`))) +
+geom_bar() +
+coord_flip() +
+labs(title = 'Novel Bacteria by Site')
+```
+
+Figure 19 shows the number of novel bacteria at each site. National Grasslands LBJ has the most novel bacteria at around 50, while our site Konza has a large number of approximately 27 novel bacteria. This is much more than the one with the least, Caribou Creek Watershed, which has only around 2 or 3 novel bacteria.
+
+### Total MAGs at each site
+
+```{r, fig.width=10}
+NEON_MAGs_bact_ind %>%
+ggplot(aes(x = fct_rev(fct_infreq(Site)), fill = Phylum)) +
+geom_bar() +
+coord_flip() +
+labs(title = 'Total MAGs at Each Site')
+```
+
+Figure 20 shows the number of MAGs of each phylum at the different sites. Our site Konza had around 60 MAGs, while National Grasslands LBJ had the highest number of MAGs at almost 200. Santa Rita Experimental Range had the least amount of MAGs at around 30. The Phylum Armatimonadota appeared to have the greatest number of MAGs at most of the sites, while our Phylum Bacteroidota had a very small number of MAGs.
+
+
+
+### Mag Count for each Phylum at Konza
+
+```{r}
+NEON_MAGs_bact_ind2 %>%
+ggplot(aes(x = Phylum, fill = Subplot)) +
+geom_bar(position = position_dodge2(width = 0.9, preserve = "single")) +
+labs(title = 'MAG Count for each Phylum at the KONZA Site')+
+coord_flip()
+
+```
+
+Figure 21 shows the MAG counts of each phylum located at the Konza site. There are 9 phylums located at our site that include Verrucomicrobota,Tectomicrobia, Pseudomonadota, Myxococcota, Methylomirabilota, Gemmatimonadota, Chlorflexota, Actinimycetota, and Acidobacteriota. 
+
+# Discussion
+
+The site that we were assigned is Konza Prairie Bio Station, Kansas.
+The metagenome data has data for all of the different NEON sites, as well as a plethora of other sets of data that has to do with the site, environment, species, etc.
+What we do is analyze our site by comparing it to other sites using the MAG data.
+The first graph shows the amount of novel bacteria at each site, individually assembled.
+Konza has the third greatest amount of novel bacteria at roughly 27.
+Trying this for combined assemblies in the second graph of this section does not work because the MAGs are combined, so you are not able to separate them based on site.
+This showcases the difference between individual and combined assemblies.
+
+Bactriodota over all as a phylum has shown to not be present at our site, Konza Prairie Bio Station, Kansas.
+This phylum was however found to be present in wetlands, boreal forests, tundra, temperate forests, and in shrubland.
+Bacteriodota has a total of 8 families that have both individual and combined assemblies.
+They tend to live in soil temperatures less than 14℃, and in soil with a low water and CaCl pH level.
+Bacteriodota have proven to like and survive in colder climates with low pH levels.
+
+# Conclusion
+
+Throughout this project we looked into the genomics of our phylum, Bacteriododta and our site Konza Prairie Biological Station. We utilized data from NEON and IMG employing a vaierty of bioinfomatic and envolutionary genomic tecniques in order to analyze the data gathered.
+Our research has highlited which types of bateria phylums live where, what might impaact them, which bacteria phylum our site is most suitable for, and what specfically impacts bacteriodota. Our finding show that Bacteriodta can survive in many envionment types which shows that they easilt adpat across different soil temperatures and pH levels. The carbon nitrogen ratio also showed that the Chitinophagaceae famly of Bacteriododta is the most adpatable with respect to the other Bacteriododta famlies. The research also showed that our assigned phylum was not presetn at the Konza site while many other phylums like Actinimycetota were. Konza has proven to be a diverse site as it has many other phylums located their as well.
+Overall, this project has shown the relationship between microorgansism and their enviornments. These findings contribute valuable insights into the genomics of Bacteriodota and the KOnza site. This information can be used to provide a foundation for future research and exploring microbial diversity.
+
+# References
+
+
 
 
