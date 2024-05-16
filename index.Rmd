@@ -9,8 +9,6 @@ output:
     highlight: tango
 ---
 
-## Hello
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -88,6 +86,12 @@ NEON_MAGs <- read_csv("data/NEON/GOLD_Study_ID_Gs0161344_NEON_2024_4_21.csv") %>
 NEON_MAGs_bact_ind <- NEON_MAGs %>% 
   filter(Domain == "Bacteria") %>% 
   filter(`Assembly Type` == "Individual") 
+```
+
+```{r}
+NEON_MAGs_bact_co <- NEON_MAGs %>% 
+  filter(Domain == "Bacteria") %>% 
+  filter(`Assembly Type` == "Combined") 
 ```
 
 
@@ -235,7 +239,7 @@ tree_Bacteroidota <- Subtree(tree_bac_preorder, 2507)
 
 
 ```{r}
-knitr::include_url("sankey-NEON_MAG_ind_pavian.txt.html")
+knitr::include_url("sankey-NEON_MAG_ind_pavian.txt (1).html")
 ```
 
 ```{r}
@@ -243,13 +247,22 @@ knitr::include_url("sankey-NEON_MAG_co_pavian_bacteroidota.html")
 ```
 
 ```{r}
-knitr::include_url("sankey-NEON_MAG_site_pavian.txt.html")
+knitr::include_url("sankey-NEON_MAG_site_pavian.txt (1).html")
 ```
 
 
 ##Konza
 ```{r}
 NEON_MAGs_bact_ind %>%
+filter(is.na(Class) | is.na(Order) | is.na(Domain) | is.na(Phylum) | is.na(Family) | is.na(Genus)) %>%
+ggplot(aes(x = fct_infreq(`Site`))) +
+geom_bar() +
+coord_flip() +
+labs(title = 'Novel Bacteria by Site')
+```
+
+```{r}
+NEON_MAGs_bact_co %>%
 filter(is.na(Class) | is.na(Order) | is.na(Domain) | is.na(Phylum) | is.na(Family) | is.na(Genus)) %>%
 ggplot(aes(x = fct_infreq(`Site`))) +
 geom_bar() +
@@ -448,4 +461,5 @@ offset=0.08, # The distance between external layers, default is 0.03 times of x 
 pwidth=0.25 # width of the external layer, default is 0.2 times of x range of tree.
 )
 ```
+
 
