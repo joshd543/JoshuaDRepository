@@ -265,22 +265,22 @@ tree_Bacteroidota <- Subtree(tree_bac_preorder, 2507)
 ## Sankey
 
 ```{r}
-knitr::include_url("sankey-NEON_MAG_ind_pavian.txt(1).html")
+knitr::include_url("sankey-NEON_MAG_ind_pavian.txt (1).html")
 ```
 
-Figure 1 shows
+Figure 1 shows indepedent assembly for the phylum bacteroidota. It shows the phylogeny in the Sankey tree. There are two main classes of bacteroidota, bacteroidia, which is the largest one, and ignavibacteria. 
 
 ```{r}
 knitr::include_url("sankey-NEON_MAG_co_pavian_bacteroidota.html")
 ```
 
-Figure 2 shows
+Figure 2 shows combined assembly for the phylum bacteroidota. It shows the phylogeny in the Sankey tree. There are still two main classes of bacteroidota, bacteroidia, which is the largest one, and ignavibacteria. The Orders seem to be less distinct from one another when organized in a combined assembly.
 
 ```{r}
-knitr::include_url("sankey-NEON_MAG_site_pavian.txt(1).html")
+knitr::include_url("sankey-NEON_MAG_site_pavian.txt (1).html")
 ```
 
-Figure 3 shows
+Figure 3 shows the Sankey phylogenic tree for the site, Konza. There are 9 phyla, the largest one being actinobacteria. The distribution of species is considerable, and this shows the diversity of Konza.
 
 ## Tree
 
@@ -530,24 +530,30 @@ Figure 21 shows the MAG counts of each phylum located at the Konza site. There a
 # Discussion
 
 The site that we were assigned is Konza Prairie Bio Station, Kansas.
-The metagenome data has data for all of the different NEON sites, as well as a plethora of other sets of data that has to do with the site, environment, species, etc.
-What we do is analyze our site by comparing it to other sites using the MAG data.
-The first graph shows the amount of novel bacteria at each site, individually assembled.
-Konza has the third greatest amount of novel bacteria at roughly 27.
-Trying this for combined assemblies in the second graph of this section does not work because the MAGs are combined, so you are not able to separate them based on site.
-This showcases the difference between individual and combined assemblies.
+The metagenome data has data for all of the different NEON sites, as well as a plethora of other sets of data that has to do with the site, environment, species, etc. What we do is analyze our site by comparing it to other sites using the MAG data. The phylogenetic tree of Konza displays the high level of diversity at the site (Figure 3). There are many types of bacteria at this site, and the Sankey tree shows the phyla, classes, orders, etc.
+In figure 1 and 2, they show the individual and combined assemblies of bacteroidota. This data is useful to visualize the phylogenetic breakdown of the phylum. For example, the families shown under bacteroidota are UBA10428, VadinHA17, Chitinophagacae, Cyclobacteriaceae, Cytophagaceae, Sphingobacteriaceae, Ignavibacteriaceae, and OLB5. These families are compared based on various metrics throughout the lab.
+Figure 5 showcases the high variability in distribution of each of the families of bacteroidota under different carbon and nitrogen soil percentages. VadinHA17 operates well under high percentages of both elements, while Chitinophagaceae functions under a wide range of percentages. Some families are more variable than others, while some likely fit certain niches better than others. This displays the variation in phenotypic diversity. In figure 6, there seems to be no large statistical pattern when it comes to optimal pH in the soil, aside from Ignavibacteriaceae and OLB5, which seem to have some preference for low pH (acidic conditions)
+Bacteriodota overall as a phylum has shown to not be present at our site, Konza Prairie Bio Station, Kansas, as shown in figure 7. Figure 7 also shows the average soil temperatures of each site and which families of the Bacteroidota phylum are able to live there. For example, VadinHA17 resides at the TOOl and WOOD sites at soil temperatures of 7.83℃, 8.13℃, and 14.60℃.
+The distribution of soil temperature in different ecosystems is shown in figure 8. Some of the families tend to fare better in certain biomes, while others, like Chitinophagacae, are rather adaptable and span multiple biomes.
 
-Bactriodota over all as a phylum has shown to not be present at our site, Konza Prairie Bio Station, Kansas.
-This phylum was however found to be present in wetlands, boreal forests, tundra, temperate forests, and in shrubland.
-Bacteriodota has a total of 8 families that have both individual and combined assemblies.
-They tend to live in soil temperatures less than 14℃, and in soil with a low water and CaCl pH level.
-Bacteriodota have proven to like and survive in colder climates with low pH levels.
+The bacteriodota phylum was however found to be present in wetlands, boreal forests, tundra, temperate forests, and in shrubland (figure 9.) The Chitinophagaca family is present in every ecosystem shown while the other 7 families are only present in a select few of listed ecosystems related to bacteriododta.
+The data shown in figure 10 is inconclusive and not a representation of the entire phylum. It shows one data point for Ignavibacteriaceae. There is no other family to compare it to with regards to the CN ratio.
+Similar to figure 5, figure 11 shows the carbon vs nitrogen percentages in the soil. However, it compares the different phyla to one another. As a whole, bacteroidota seems to live on a varied level of carbon and nitrogen percent, favoring a higher carbon percentage.
+The overall phylums have a very diverse and linear relationship with soil pH levels and soil CaCl levels, figure 12. When this graph is compared to figure 6, bacteriodota only, it shows to be more spread out. This implies that bacteria overall are a diverse micro organism and can easily adapt.
+Analyzing the CN ratio for all of the phyla, figure 13 shows a high CN ratio, affirming the data in figure 11 that bacteroidota tend to live in areas rich in carbon, and no so rich in nitrogen.
+Figure 14 shows the distribution of the different phyla in the various sites that they are found. This data is matched against the temperature of the soil. Bacteroidota tends to live on the high end of 10-20°C soil. Amongst all phyla, this is about average according the the bar graph.
+The solid temperature at each ecosystem plays a large role in which phylums are able to survive as some to better in colder temperatures while other do better in warmer temperatures. In figure 15 we were able to see which phylum was located in each ecosystem and what the optimal soil temperature was related to that specific phylum and ecosystem.
+Figure 16 shows which biomes each phyla are found at. Bacteroidota is found in boreal forests, wetlands, tundra, temperate forests, and shrublands. This is a wide variety of biomes and conditions, showing the persistence of this phylum in a wide range of environments.
+In figure 17 you can cee the relationship between soil water pH and soil CaCl levels specifically at Konza in relation to each phylum. The relationship is again linear, with the phylum thermoproteota surviving witht  he highest water pH (7.6)and soil CaCl (7.18) levels.
+The Konza site only has one ecosystem, grasslands. Within grasslands, the temperature does not vary much. Most of the phyla in Konza live within the 20-22°C soil temperature range (Figure 18).
+Figure 19 shows the amount of novel bacteria at each site, individually assembled. Konza has the third greatest amount of novel bacteria at roughly 27. However, figure 20 shows the total MAG counts at each site, and even though Konza has a high number of novel bacteria, the total MAG count is lower. This could be explained by a similarity/genetic relation between the bacteria at this site compared to other sites. Figure 21 goes more in depth in the site, showing the MAG counts for each individual phylum at Konza.
+
 
 # Conclusion
 
-Throughout this project we looked into the genomics of our phylum, Bacteriododta and our site Konza Prairie Biological Station. We utilized data from NEON and IMG employing a vaierty of bioinfomatic and envolutionary genomic tecniques in order to analyze the data gathered.
-Our research has highlited which types of bateria phylums live where, what might impaact them, which bacteria phylum our site is most suitable for, and what specfically impacts bacteriodota. Our finding show that Bacteriodta can survive in many envionment types which shows that they easilt adpat across different soil temperatures and pH levels. The carbon nitrogen ratio also showed that the Chitinophagaceae famly of Bacteriododta is the most adpatable with respect to the other Bacteriododta famlies. The research also showed that our assigned phylum was not presetn at the Konza site while many other phylums like Actinimycetota were. Konza has proven to be a diverse site as it has many other phylums located their as well.
-Overall, this project has shown the relationship between microorgansism and their enviornments. These findings contribute valuable insights into the genomics of Bacteriodota and the KOnza site. This information can be used to provide a foundation for future research and exploring microbial diversity.
+Throughout this project we looked into the genomics of our phylum, Bacteriodota and our site Konza Prairie Biological Station. We utilized data from NEON and IMG employing a variety of bioinformatic and evolutionary genomic techniques in order to analyze the data gathered.
+Our research has highlighted which types of bacterial phyla live where, what might impact them, which bacteria phylum our site is most suitable for, and what specifically impacts bacteroidota. Our findings show that Bacteroidota can survive in many environment types which shows that they easily adapt across different soil temperatures and pH levels. The carbon nitrogen ratio also showed that the Chitinophagaceae famly of Bacteroidota is the most adaptable with respect to the other Bacteroidota families. The research also showed that our assigned phylum was not present at the Konza site while many other phyla like Actinimycetota were. Konza has proven to be a diverse site as it has many other phyla located there as well.
+Overall, this project has shown the relationship between micro organisms and their environments. These findings contribute valuable insights into the genomics of Bacteroidota and the Konza site. This information can be used to provide a foundation for future research and exploring microbial diversity.
 
 # References
 
